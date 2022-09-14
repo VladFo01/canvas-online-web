@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 import styled from '@emotion/styled'
 
-interface BlockProps {
-  children?: ReactNode | any
+export interface BlockProps {
+  children?: ReactNode | string
   onClick?: (event: any) => void
   marginLeft?: string
   marginRight?: string
@@ -21,6 +21,8 @@ const BlockStyled = styled.button<BlockProps>`
   border: ${(props) => props.border};
 `
 
-const Button = (props: BlockProps) => {
-  return <BlockStyled {...props}></BlockStyled>
+const Button = ({ children, ...props }: BlockProps) => {
+  return <BlockStyled {...props}>{children}</BlockStyled>
 }
+
+export default Button

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import styled from '@emotion/styled'
 
-interface BlockProps {
+export interface BlockProps {
   children: ReactNode | any
   onClick?: (event: any) => void
   justifyContent?: string

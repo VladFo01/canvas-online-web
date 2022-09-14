@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-interface BlockProps {
+export interface BlockProps {
   src: string
   alt: string
   marginLeft?: string

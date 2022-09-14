@@ -1,31 +1,25 @@
+import { ReactNode } from 'react'
 import styled from '@emotion/styled'
 
 export interface BlockProps {
-  type: string
-  value: string | number
-  onClick?: (event: any) => void
-  id?: string
-  disabled?: boolean
-  placeholder?: string
+  children: ReactNode
+  for: string
   marginLeft?: string
   marginRight?: string
   marginBottom?: string
   marginTop?: string
   margin?: string
-  border?: string
 }
 
-const BlockStyled = styled.input<BlockProps>`
+const BlockStyled = styled.label<BlockProps>`
   margin-left: ${(props) => props.marginLeft};
   margin-right: ${(props) => props.marginRight};
   margin-top: ${(props) => props.marginTop};
   margin-bottom: ${(props) => props.marginBottom};
   margin: ${(props) => props.margin};
-  border: ${(props) => props.border};
 `
-
-const Input = (props: BlockProps) => {
-  return <BlockStyled {...props}></BlockStyled>
+const Label = ({ children, ...props }: BlockProps) => {
+  return <BlockStyled {...props}>{children}</BlockStyled>
 }
 
-export default Input
+export default Label
