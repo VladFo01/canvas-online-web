@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-export interface BlockProps {
+interface BlockProps {
   href?: string
   onClick?: (event: any) => void
   marginLeft?: string

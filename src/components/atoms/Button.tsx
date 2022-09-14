@@ -1,24 +1,31 @@
 import { ReactNode } from 'react'
 import styled from '@emotion/styled'
 
-export interface BlockProps {
+interface BlockProps {
   children?: ReactNode | string
   onClick?: (event: any) => void
+  backgroundImage?: string
   marginLeft?: string
   marginRight?: string
   marginBottom?: string
   marginTop?: string
   margin?: string
   border?: string
+  width?: string
+  height?: string
 }
 
 const BlockStyled = styled.button<BlockProps>`
+  background: url('${(props) => props.backgroundImage}') no-repeat center center;
   margin-left: ${(props) => props.marginLeft};
   margin-right: ${(props) => props.marginRight};
   margin-top: ${(props) => props.marginTop};
   margin-bottom: ${(props) => props.marginBottom};
   margin: ${(props) => props.margin};
   border: ${(props) => props.border};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  border: none
 `
 
 const Button = ({ children, ...props }: BlockProps) => {

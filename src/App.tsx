@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Paint from './components/pages/Paint'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className='App'>{import.meta.env.VITE_NODE_VAR}</div>
-      <p>Hello</p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Paint />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-export interface BlockProps {
+interface BlockProps {
   children: string
   fontSize: string
   fontWeight?: string
