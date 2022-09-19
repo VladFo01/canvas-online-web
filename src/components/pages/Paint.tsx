@@ -27,7 +27,7 @@ const Paint = () => {
     <>
       <Toolbar {...toolbarBgImages} />
       <SettingBar />
-      <Canvas width='1500' height='650' />
+      <Canvas width='1500' height='650' marginTop={'10px'} />
     </>
   )
 }

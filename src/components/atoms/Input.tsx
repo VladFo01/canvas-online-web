@@ -6,6 +6,7 @@ interface BlockProps {
   onChange?: (event: any) => void
   id?: string
   disabled?: boolean
+  readonly?: boolean
   placeholder?: string
   min?: string
   max?: string

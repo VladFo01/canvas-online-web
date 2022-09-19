@@ -1,3 +1,6 @@
+import { useDispatch, useSelector } from 'react-redux'
+import { setColor, setTool } from '../../store/slices/toolSlice'
+import Brush from '../../tools/Brush'
 import Button from '../atoms/Button'
 import Flex from '../atoms/Flex'
 import Input from '../atoms/Input'
@@ -24,6 +27,20 @@ const toolbarButtonSizes: ToolbarButtonSizeProps = {
 }
 
 const Toolbar = (props: ToolbarProps) => {
+  const dispatch = useDispatch()
+  const color = useSelector((state: any) => state.tool.color)
+  const canvas = useSelector((state: any) => state.canvas.canvas)
+
+  const onColorChangeHandler = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    dispatch(setColor(e.target.value))
+  }
+
+  const onToolChangeHandler = (ToolClass: any) => {
+    dispatch(setTool(new ToolClass(canvas)))
+  }
+
   return (
     <Flex
       justifyContent='space-between'
@@ -34,6 +51,7 @@ const Toolbar = (props: ToolbarProps) => {
         <Button
           backgroundImage={props.brushBgImage}
           {...toolbarButtonSizes}
+          onClick={onToolChangeHandler.bind(null, Brush)}
           marginRight='20px'
         />
         <Button
@@ -58,7 +76,8 @@ const Toolbar = (props: ToolbarProps) => {
         />
         <Input
           type='color'
-          value={'none'}
+          value={color}
+          onChange={onColorChangeHandler}
           {...toolbarButtonSizes}
           border='none'
         />

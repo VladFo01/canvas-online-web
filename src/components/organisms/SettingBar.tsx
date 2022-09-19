@@ -1,9 +1,20 @@
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setWidth } from '../../store/slices/toolSlice'
 import Flex from '../atoms/Flex'
 import Input from '../atoms/Input'
 import Label from '../atoms/Label'
 import Typography from '../atoms/Typography'
 
 const SettingBar = () => {
+  const dispatch = useDispatch()
+  const [inputState, setInputState] = useState<number>(8)
+
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setInputState(Number(e.target.value));
+    dispatch(setWidth(Number(e.target.value)));
+  }
+
   return (
     <Flex
       alignItems='center'
@@ -20,8 +31,9 @@ const SettingBar = () => {
           type='number'
           min='8'
           max='24'
-          step='4'
-          value={8}
+          step='2'
+          value={inputState}
+          onChange={onChangeHandler}
           height='21px'
           width='45px'
         />

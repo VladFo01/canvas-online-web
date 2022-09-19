@@ -1,5 +1,10 @@
+import { useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import Flex from '../atoms/Flex'
+import { useDispatch, useSelector } from 'react-redux'
+import { setCanvas } from '../../store/slices/canvasSlice'
+import Brush from '../../tools/Brush'
+import { setTool } from '../../store/slices/toolSlice'
 
 interface BlockProps {
   id?: string
@@ -22,9 +27,24 @@ const BlockStyled = styled.canvas<BlockProps>`
 `
 
 const Canvas = (props: BlockProps) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const dispatch = useDispatch()
+  const currentCanvas: HTMLCanvasElement = useSelector(
+    (state: any) => state.canvas.canvas,
+  )
+
+  useEffect(() => {
+    dispatch(setCanvas(canvasRef.current));
+    // dispatch(setTool(new Brush(canvasRef.current)));
+  }, [])
+
+
   return (
     <Flex justifyContent='center' alignItems='center'>
-      <BlockStyled {...props}></BlockStyled>
+      <BlockStyled
+        ref={canvasRef}
+        {...props}
+      ></BlockStyled>
     </Flex>
   )
 }
