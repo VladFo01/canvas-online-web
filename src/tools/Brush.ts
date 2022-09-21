@@ -4,8 +4,8 @@ import { Tool } from "./Tool";
 export default class Brush extends Tool {
     private mouseDown: boolean;
 
-    constructor(canvas: HTMLCanvasElement) {
-        super(canvas);
+    constructor(canvas: HTMLCanvasElement, width: number, color: string) {
+        super(canvas, width, color);
         this.ctx!.lineCap = 'round';
         this.mouseDown = false;
         this.listen();

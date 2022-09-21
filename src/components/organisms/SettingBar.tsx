@@ -11,8 +11,11 @@ const SettingBar = () => {
   const [inputState, setInputState] = useState<number>(8)
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setInputState(Number(e.target.value));
-    dispatch(setWidth(Number(e.target.value)));
+    const width = Number(e.target.value);
+    if (width >= 8 || width <= 24) {
+      dispatch(setWidth(width));
+      setInputState(width);
+    }
   }
 
   return (

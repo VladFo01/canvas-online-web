@@ -29,13 +29,9 @@ const BlockStyled = styled.canvas<BlockProps>`
 const Canvas = (props: BlockProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const dispatch = useDispatch()
-  const currentCanvas: HTMLCanvasElement = useSelector(
-    (state: any) => state.canvas.canvas,
-  )
 
   useEffect(() => {
     dispatch(setCanvas(canvasRef.current));
-    // dispatch(setTool(new Brush(canvasRef.current)));
   }, [])
 
 

@@ -4,9 +4,12 @@ export class Tool {
     protected ctx: CanvasRenderingContext2D | null | undefined;
     protected rect: DOMRect | undefined;
     
-    constructor(canvas: HTMLCanvasElement | null) {
+    constructor(canvas: HTMLCanvasElement | null, width: number, color: string) {
         this.canvas = canvas;
         this.ctx = canvas?.getContext('2d');
+        this.ctx!.lineWidth = width;
+        this.ctx!.strokeStyle = color;
+        this.ctx!.fillStyle = color;
         this.rect = canvas?.getBoundingClientRect();
         this.destroyEvents();
     }
