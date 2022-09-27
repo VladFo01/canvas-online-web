@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createRef, useLayoutEffect, useRef, useState } from 'react'
+import {
+  createElement,
+  createRef,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { redo, undo } from '../../store/slices/canvasSlice'
 import { setColor, setFillColor, setTool } from '../../store/slices/toolSlice'
 import Brush from '../../tools/Brush'
 import { Circle } from '../../tools/Circle'
@@ -42,7 +49,7 @@ const Toolbar = (props: ToolbarProps) => {
   const { color, width } = useSelector((state: any) => state.tool)
   const canvas = useSelector((state: any) => state.canvas.canvas)
 
-  const [currentTool, setCurrentTool] = useState<string>('');
+  const [currentTool, setCurrentTool] = useState<string>('')
 
   const onColorChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -51,9 +58,30 @@ const Toolbar = (props: ToolbarProps) => {
     dispatch(setFillColor(e.target.value))
   }
 
-  const onToolChangeHandler = (ToolClass: any, event: React.ChangeEvent<HTMLButtonElement>) => {
+  const onToolChangeHandler = (
+    ToolClass: any,
+    event: React.ChangeEvent<HTMLButtonElement>,
+  ) => {
     dispatch(setTool(new ToolClass(canvas, width, color)))
-    setCurrentTool(event.target.id);
+    setCurrentTool(event.target.id)
+  }
+
+  const download = () => {
+    const dataUrl = canvas.toDataURL()
+    const a = document.createElement('a')
+    a.href = dataUrl
+    a.download = `${Date.now()}.jpg`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+
+  const onReduHandler = () => {
+    dispatch(redo());
+  }
+
+  const onUndoHandler = () => {
+    dispatch(undo());
   }
 
   return (
@@ -69,7 +97,7 @@ const Toolbar = (props: ToolbarProps) => {
           {...toolbarButtonSizes}
           onClick={onToolChangeHandler.bind(null, Brush)}
           marginRight='20px'
-          style={currentTool === 'brush' ? activeToolStyle : null}
+          style={currentTool === 'brush' ? activeToolStyle : undefined}
         />
         <Button
           id='rect'
@@ -77,7 +105,7 @@ const Toolbar = (props: ToolbarProps) => {
           {...toolbarButtonSizes}
           onClick={onToolChangeHandler.bind(null, Rect)}
           marginRight='20px'
-          style={currentTool === 'rect' ? activeToolStyle : null}
+          style={currentTool === 'rect' ? activeToolStyle : undefined}
         />
         <Button
           id='circle'
@@ -85,7 +113,7 @@ const Toolbar = (props: ToolbarProps) => {
           {...toolbarButtonSizes}
           onClick={onToolChangeHandler.bind(null, Circle)}
           marginRight='20px'
-          style={currentTool === 'circle' ? activeToolStyle : null}
+          style={currentTool === 'circle' ? activeToolStyle : undefined}
         />
         <Button
           id='eraser'
@@ -93,7 +121,7 @@ const Toolbar = (props: ToolbarProps) => {
           {...toolbarButtonSizes}
           onClick={onToolChangeHandler.bind(null, Erase)}
           marginRight='20px'
-          style={currentTool === 'eraser' ? activeToolStyle : null}
+          style={currentTool === 'eraser' ? activeToolStyle : undefined}
         />
         <Button
           id='line'
@@ -101,7 +129,7 @@ const Toolbar = (props: ToolbarProps) => {
           {...toolbarButtonSizes}
           onClick={onToolChangeHandler.bind(null, Line)}
           marginRight='20px'
-          style={currentTool === 'line' ? activeToolStyle : null}
+          style={currentTool === 'line' ? activeToolStyle : undefined}
         />
         <Input
           type='color'
@@ -113,16 +141,22 @@ const Toolbar = (props: ToolbarProps) => {
       </Flex>
       <Flex>
         <Button
+          onClick={onUndoHandler}
           backgroundImage={props.undoBgImage}
           {...toolbarButtonSizes}
           marginRight='20px'
         />
         <Button
+          onClick={onReduHandler}
           backgroundImage={props.redoBgImage}
           {...toolbarButtonSizes}
           marginRight='20px'
         />
-        <Button backgroundImage={props.saveBgImage} {...toolbarButtonSizes} />
+        <Button
+          onClick={() => download()}
+          backgroundImage={props.saveBgImage}
+          {...toolbarButtonSizes}
+        />
       </Flex>
     </Flex>
   )

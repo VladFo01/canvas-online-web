@@ -1,11 +1,10 @@
-import { ReactNode, RefObject } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import styled from '@emotion/styled'
 
 interface BlockProps {
   children?: ReactNode | string
   onClick?: (event: any) => void
   backgroundImage?: string
-  ref?: RefObject<HTMLButtonElement>
   id?: string
   marginLeft?: string
   marginRight?: string
@@ -15,7 +14,7 @@ interface BlockProps {
   border?: string
   width?: string
   height?: string
-  style?: object | null
+  style?: CSSProperties | undefined
 }
 
 const BlockStyled = styled.button<BlockProps>`

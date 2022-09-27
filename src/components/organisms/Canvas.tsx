@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import Flex from '../atoms/Flex'
-import { useDispatch, useSelector } from 'react-redux'
-import { setCanvas } from '../../store/slices/canvasSlice'
+import { useDispatch } from 'react-redux'
+import { pushToUndo, setCanvas } from '../../store/slices/canvasSlice'
 import Brush from '../../tools/Brush'
 import { setTool } from '../../store/slices/toolSlice'
 
 interface BlockProps {
   id?: string
+  onMouseDown?: (e: any) => void
   width?: string
   height?: string
   marginLeft?: string
@@ -32,12 +33,16 @@ const Canvas = (props: BlockProps) => {
 
   useEffect(() => {
     dispatch(setCanvas(canvasRef.current));
-  }, [])
+  }, []);
 
+  const onMouseDownHandler = () => {
+    dispatch(pushToUndo(canvasRef.current?.toDataURL()));
+  }
 
   return (
     <Flex justifyContent='center' alignItems='center'>
       <BlockStyled
+        onMouseDown={onMouseDownHandler}
         ref={canvasRef}
         {...props}
       ></BlockStyled>
