@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  createElement,
-  createRef,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { redo, undo } from '../../store/slices/canvasSlice'
 import { setColor, setFillColor, setTool } from '../../store/slices/toolSlice'
@@ -77,11 +71,11 @@ const Toolbar = (props: ToolbarProps) => {
   }
 
   const onReduHandler = () => {
-    dispatch(redo());
+    dispatch(redo())
   }
 
   const onUndoHandler = () => {
-    dispatch(undo());
+    dispatch(undo())
   }
 
   return (

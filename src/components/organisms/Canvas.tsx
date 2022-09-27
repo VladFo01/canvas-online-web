@@ -3,8 +3,6 @@ import styled from '@emotion/styled'
 import Flex from '../atoms/Flex'
 import { useDispatch } from 'react-redux'
 import { pushToUndo, setCanvas } from '../../store/slices/canvasSlice'
-import Brush from '../../tools/Brush'
-import { setTool } from '../../store/slices/toolSlice'
 
 interface BlockProps {
   id?: string
