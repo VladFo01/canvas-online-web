@@ -4,14 +4,14 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 
 interface canvasState {
     canvas: HTMLCanvasElement | null
-    undoList: string[],
+    undoList: string[]
     redoList: string[]
 }
 
 const initialState: canvasState = {
     canvas: null,
     undoList: [],
-    redoList: []
+    redoList: [],    
 }
 
 export const canvasSlice = createSlice({

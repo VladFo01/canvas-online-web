@@ -6,6 +6,7 @@ import store from './store/config'
 import App from './App'
 import './styles/normalize.scss'
 import './styles/index.scss'
+import 'antd/dist/antd.css'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

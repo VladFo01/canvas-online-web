@@ -3,10 +3,14 @@ export class Tool {
     protected canvas: HTMLCanvasElement | null;
     protected ctx: CanvasRenderingContext2D | null | undefined;
     protected rect: DOMRect | undefined;
+    protected socket: WebSocket
+    protected id: string
     
-    constructor(canvas: HTMLCanvasElement | null, width: number, color: string) {
+    constructor(canvas: HTMLCanvasElement | null, width: number, color: string, socket: WebSocket, id: string) {
         this.canvas = canvas;
         this.ctx = canvas?.getContext('2d');
+        this.socket = socket;
+        this.id = id;
         this.ctx!.lineWidth = width;
         this.ctx!.strokeStyle = color;
         this.ctx!.fillStyle = color;

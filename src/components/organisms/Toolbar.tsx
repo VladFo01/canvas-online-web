@@ -40,6 +40,7 @@ const activeToolStyle: React.CSSProperties = {
 
 const Toolbar = (props: ToolbarProps) => {
   const dispatch = useDispatch()
+  const { socket, id } = useSelector((state: any) => state.session)
   const { color, width } = useSelector((state: any) => state.tool)
   const canvas = useSelector((state: any) => state.canvas.canvas)
 
@@ -56,7 +57,7 @@ const Toolbar = (props: ToolbarProps) => {
     ToolClass: any,
     event: React.ChangeEvent<HTMLButtonElement>,
   ) => {
-    dispatch(setTool(new ToolClass(canvas, width, color)))
+    dispatch(setTool(new ToolClass(canvas, width, color, socket, id)))
     setCurrentTool(event.target.id)
   }
 

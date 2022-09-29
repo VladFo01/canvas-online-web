@@ -19,6 +19,7 @@ interface BlockProps {
   border?: string
   width?: string
   height?: string
+  padding?: string
 }
 
 const BlockStyled = styled.input<BlockProps>`
@@ -30,6 +31,7 @@ const BlockStyled = styled.input<BlockProps>`
   border: ${(props) => props.border};
   width: ${(props) => props.width};
   height: ${(props) => props.height};
+  padding: ${(props) => props.padding};
 `
 
 const Input = (props: BlockProps) => {
