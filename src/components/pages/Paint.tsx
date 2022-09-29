@@ -9,6 +9,7 @@ import Canvas from '../organisms/Canvas'
 import SettingBar from '../organisms/SettingBar'
 import Toolbar, { ToolbarProps } from '../organisms/Toolbar'
 import StartModal from '../organisms/StartModal'
+import connectionModal from '../organisms/connectionModal'
 
 import brushBgImage from '../../assets/brush.svg'
 import rectBgImage from '../../assets/rect.svg'
@@ -20,6 +21,7 @@ import redoBgImage from '../../assets/redo.svg'
 import saveBgImage from '../../assets/save.svg'
 
 import type { messageRequest } from '../../types'
+import { buildConnectionTitle } from '../../utils/buildConnectionTitle'
 
 const toolbarBgImages: ToolbarProps = {
   brushBgImage,
@@ -34,14 +36,15 @@ const toolbarBgImages: ToolbarProps = {
 
 const Paint = () => {
   const dispatch = useDispatch()
-  const username = useSelector((state: any) => state.canvas.username)
+  const username = useSelector((state: any) => state.session.username)
+
   const { id } = useParams()
 
   useEffect(() => {
     if (username) {
       const socket = new WebSocket('ws://localhost:5002/user')
       const websocketService = new WebsocketService(socket)
-      
+
       dispatch(setSocket(socket))
       dispatch(setSessionId(id!))
 
@@ -53,7 +56,19 @@ const Paint = () => {
         })
       })
 
-      websocketService.handleMessage(() => {})
+      websocketService.handleMessage((event: MessageEvent) => {
+        const msg: messageRequest = JSON.parse(event.data);
+
+        switch (msg.method) {
+          case 'connection':
+            return connectionModal({
+              secondsToGo: 3,
+              title: buildConnectionTitle(msg.username)
+            })
+          default:
+            return null;
+        }
+      })
     }
   }, [username])
 
