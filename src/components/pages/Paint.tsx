@@ -2,8 +2,10 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { WebsocketService } from '../../utils/websocketService'
 import { setSessionId, setSocket } from '../../store/slices/sessionSlice'
+import { WebsocketService } from '../../utils/websocketService'
+import { buildConnectionTitle } from '../../utils/buildConnectionTitle'
+import { drawHandler } from '../../utils/drawHandler'
 
 import Canvas from '../organisms/Canvas'
 import SettingBar from '../organisms/SettingBar'
@@ -20,8 +22,7 @@ import undoBgImage from '../../assets/undo.svg'
 import redoBgImage from '../../assets/redo.svg'
 import saveBgImage from '../../assets/save.svg'
 
-import type { messageRequest } from '../../types'
-import { buildConnectionTitle } from '../../utils/buildConnectionTitle'
+import type { WebsocketMessage } from '../../types'
 
 const toolbarBgImages: ToolbarProps = {
   brushBgImage,
@@ -36,7 +37,8 @@ const toolbarBgImages: ToolbarProps = {
 
 const Paint = () => {
   const dispatch = useDispatch()
-  const username = useSelector((state: any) => state.session.username)
+  const username: string = useSelector((state: any) => state.session.username)
+  const canvas: HTMLCanvasElement = useSelector((state: any) => state.canvas.canvas)
 
   const { id } = useParams()
 
@@ -49,7 +51,7 @@ const Paint = () => {
       dispatch(setSessionId(id!))
 
       websocketService.handleConnection(() => {
-        websocketService.sendMessage<messageRequest>({
+        websocketService.sendMessage<WebsocketMessage>({
           id,
           username,
           method: 'connection',
@@ -57,14 +59,16 @@ const Paint = () => {
       })
 
       websocketService.handleMessage((event: MessageEvent) => {
-        const msg: messageRequest = JSON.parse(event.data);
+        const msg: WebsocketMessage = JSON.parse(event.data);
 
         switch (msg.method) {
           case 'connection':
             return connectionModal({
               secondsToGo: 3,
-              title: buildConnectionTitle(msg.username)
-            })
+              title: buildConnectionTitle(msg.username!)
+            });
+          case 'draw':
+            return drawHandler(msg, canvas.getContext('2d')!);
           default:
             return null;
         }

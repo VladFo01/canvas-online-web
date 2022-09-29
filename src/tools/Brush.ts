@@ -1,11 +1,12 @@
 import { Tool } from "./Tool";
+import type { WebsocketFigure } from "../types";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-export default class Brush extends Tool {
+export class Brush extends Tool {
     private mouseDown: boolean;
 
-    constructor(canvas: HTMLCanvasElement, width: number, color: string) {
-        super(canvas, width, color);
+    constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
+        super(canvas, width, color, socket, id);
         this.ctx!.lineCap = 'round';
         this.mouseDown = false;
         this.listen();
@@ -17,25 +18,43 @@ export default class Brush extends Tool {
         this.canvas!.onmouseup = this.mouseUpHandler.bind(this);
     }
 
-    private drawLine(x: number, y: number) {
-        this.ctx?.lineTo(x, y);
-        this.ctx?.stroke();
-    }
 
     private mouseDownHandler(event: MouseEvent) {
+        this.lineWidth = this.lineWidthValue;
+        this.lineColor = this.color;
+
         this.mouseDown = true;
-        this.ctx?.beginPath();
-        this.ctx?.moveTo(event.clientX - this.rect!.left, event.clientY - this.rect!.top);
+        this.sendFigure({
+            type: 'start',
+            x: event.clientX - this.rect!.left,
+            y: event.clientY - this.rect!.top,
+            lineWidth: this.lineWidthValue,
+            color: this.color
+        })
     }
 
     private mouseMoveHandler(event: MouseEvent) {
         if (this.mouseDown) {
-            this.drawLine(event.clientX - this.rect!.left, event.clientY - this.rect!.top);
+            // this.draw(event.clientX - this.rect!.left, event.clientY - this.rect!.top);
+            this.sendFigure({
+                type: 'brush',
+                x: event.clientX - this.rect!.left,
+                y: event.clientY - this.rect!.top,
+                lineWidth: this.lineWidthValue,
+                color: this.color
+            })
         }
     }
 
     private mouseUpHandler() {
         this.mouseDown = false;
-        this.ctx?.closePath();
+        this.sendFigure({
+            type: 'finish'
+        })
+    }
+
+    static draw(ctx: CanvasRenderingContext2D, { x, y }: WebsocketFigure) {
+        ctx.lineTo(x!, y!);
+        ctx.stroke();
     }
 }

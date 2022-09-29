@@ -1,17 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Tool } from "./Tool";
+import type { WebsocketFigure } from "../types";
 
 export class Line extends Tool {
     private startX: number;
     private startY: number;
+    private endX: number
+    private endY: number
     private mouseDown: boolean;
     private saved: string;
 
-    constructor(canvas: HTMLCanvasElement, width: number, color: string) {
-        super(canvas, width, color);
+    constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
+        super(canvas, width, color, socket, id);
         this.listen();
         this.startX = 0;
         this.startY = 0;
+        this.endX = 0;
+        this.endY = 0;
         this.mouseDown = false;
         this.saved = '';
     }
@@ -22,7 +27,7 @@ export class Line extends Tool {
         this.canvas!.onmouseup = this.mouseUpHandler.bind(this);
     }
 
-    private drawLine(x: number, y: number) {
+    private drawLine() {
         const image = new Image();
         image.src = this.saved;
         image.onload = () => {
@@ -30,13 +35,16 @@ export class Line extends Tool {
             this.ctx?.drawImage(image, 0, 0, this.canvas!.width, this.canvas!.height);
             this.ctx?.beginPath();
             this.ctx?.moveTo(this.startX, this.startY);
-            this.ctx?.lineTo(x, y);
+            this.ctx?.lineTo(this.endX, this.endY);
             this.ctx?.fill();
             this.ctx?.stroke();
         }
     }
 
     private mouseDownHandler(event: MouseEvent) {
+        this.lineWidth = this.lineWidthValue;
+        this.lineColor = this.color;
+
         this.mouseDown = true;
         this.startX = event.clientX - this.rect!.left;
         this.startY = event.clientY - this.rect!.top;
@@ -45,14 +53,37 @@ export class Line extends Tool {
 
     private mouseMoveHandler(event: MouseEvent) {
         if (this.mouseDown) {
-            const currentX = event.clientX - this.rect!.left;
-            const currentY = event.clientY - this.rect!.top;
-            this.drawLine(currentX, currentY);
+            this.endX = event.clientX - this.rect!.left;
+            this.endY = event.clientY - this.rect!.top;
+            this.drawLine();
         }
     }
 
     private mouseUpHandler() {
         this.mouseDown = false;
-        this.ctx?.closePath();
+        this.sendFigure({
+            type: 'line',
+            x: this.startX,
+            y: this.startY,
+            endX: this.endX,
+            endY: this.endY,
+            lineWidth: this.lineWidthValue,
+            color: this.color
+        })
+        this.sendFigure({
+            type: 'finish'
+        })
+    }
+
+    static draw(ctx: CanvasRenderingContext2D, { x, y, endX, endY, lineWidth, color }: WebsocketFigure) {
+        ctx.lineWidth = lineWidth!;
+        ctx.strokeStyle = color!;
+        ctx.fillStyle = color!;
+
+        ctx.beginPath();
+        ctx.moveTo(x!, y!);
+        ctx.lineTo(endX!, endY!);
+        ctx.fill();
+        ctx.stroke();
     }
 }

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Tool } from "./Tool";
+import type { WebsocketFigure } from "../types";
 
 export class Rect extends Tool {
     private mouseDown: boolean;
@@ -7,18 +8,16 @@ export class Rect extends Tool {
     private startY: number;
     private width: number;
     private height: number;
-    private selectedWidth: number;
     private saved: string;
 
-    constructor(canvas: HTMLCanvasElement, width: number, color: string) {
-        super(canvas, width, color);
+    constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
+        super(canvas, width, color, socket, id);
         this.mouseDown = false;
         this.listen();
         this.startX = 0;
         this.startY = 0;
         this.width = 0;
         this.height = 0;
-        this.selectedWidth = this.ctx!.lineWidth;
         this.saved = '';
     }
 
@@ -28,14 +27,14 @@ export class Rect extends Tool {
         this.canvas!.onmouseup = this.mouseUpHandler.bind(this);
     }
 
-    private draw(x: number, y: number, width: number, height: number) {
+    private draw() {
         const image = new Image();
         image.src = this.saved;
         image.onload = () => {
             this.ctx?.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
             this.ctx?.drawImage(image, 0, 0, this.canvas!.width, this.canvas!.height);
             this.ctx?.beginPath();
-            this.ctx?.rect(x, y, width, height);
+            this.ctx?.rect(this.startX, this.startY, this.width, this.height);
             this.ctx?.fill();
             this.ctx?.stroke();
         }
@@ -43,6 +42,9 @@ export class Rect extends Tool {
 
     private mouseDownHandler(event: MouseEvent) {
         this.ctx!.lineWidth = 1;
+        this.fillColor = this.color;
+        this.lineColor = this.color;
+
         this.mouseDown = true;
         this.ctx?.beginPath();
         this.startX = event.clientX - this.rect!.left;
@@ -56,14 +58,34 @@ export class Rect extends Tool {
             const currentY: number = event.clientY - this.rect!.top;
             this.width = currentX - this.startX;
             this.height = currentY - this.startY;
-            this.draw(this.startX, this.startY, this.width, this.height);
+            this.draw();
         }
     }
 
     private mouseUpHandler() {
         this.mouseDown = false;
+        this.sendFigure({
+            type: 'rect',
+            x: this.startX,
+            y: this.startY,
+            width: this.width,
+            height: this.height,
+            lineWidth: this.ctx!.lineWidth,
+            color: this.color
+        })
         setTimeout(() => {
-            this.ctx!.lineWidth = this.selectedWidth;
+            this.ctx!.lineWidth = this.lineWidthValue;
         }, 0);
+    }
+
+    static draw(ctx: CanvasRenderingContext2D, { x, y, width, height, lineWidth, color }: WebsocketFigure) {
+        ctx.lineWidth = lineWidth!;
+        ctx.strokeStyle = color!;
+        ctx.fillStyle = color!;
+
+        ctx.beginPath();
+        ctx.rect(x!, y!, width!, height!);
+        ctx.fill();
+        ctx.stroke();
     }
 }

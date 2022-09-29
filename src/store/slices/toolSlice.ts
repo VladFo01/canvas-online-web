@@ -24,15 +24,21 @@ export const toolSlice = createSlice({
         },
         setColor(state: toolState, action: PayloadAction<string>) {
             state.color = action.payload;
-            state.tool.lineColor = action.payload;
+            if (state.tool) {
+                state.tool.lineColor = action.payload;
+            }
         },
         setFillColor(state: toolState, action: PayloadAction<string>) {
             state.fillColor = action.payload;
-            state.tool.fillColor = action.payload;
+            if (state.tool) {
+                state.tool.fillColor = action.payload;
+            }
         },
         setWidth(state: toolState, action: PayloadAction<number>) {
             state.width = action.payload;
-            state.tool.lineWidth = action.payload;
+            if (state.tool) {
+                state.tool.lineWidth = action.payload;
+            }
         }
     }
 });

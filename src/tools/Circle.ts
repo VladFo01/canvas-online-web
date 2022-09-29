@@ -1,21 +1,26 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { WebsocketFigure } from "../types";
 import { Tool } from "./Tool";
 
 export class Circle extends Tool {
-    private selectedWidth: number;
     private mouseDown: boolean;
     private startX: number;
     private startY: number;
+    private centerX: number
+    private centerY: number
+    private radius: number
     private saved: string;
 
-    constructor(canvas: HTMLCanvasElement, width: number, color: string) {
-        super(canvas, width, color);
+    constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
+        super(canvas, width, color, socket, id);
         this.mouseDown = false;
         this.listen();
         this.startX = 0;
         this.startY = 0;
+        this.centerX = 0;
+        this.centerY = 0;
+        this.radius = 0;
         this.saved = '';
-        this.selectedWidth = this.ctx!.lineWidth;
     }
 
     private listen() {
@@ -24,14 +29,14 @@ export class Circle extends Tool {
         this.canvas!.onmouseup = this.mouseUpHandler.bind(this);
     }
 
-    private draw(centerX: number, centerY: number, radius: number) {
+    private draw() {
         const image = new Image();
         image.src = this.saved;
         image.onload = () => {
             this.ctx?.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
             this.ctx?.drawImage(image, 0, 0, this.canvas!.width, this.canvas!.height);
             this.ctx?.beginPath();
-            this.ctx?.arc(centerX, centerY, radius, 0, Math.PI * 2, false);
+            this.ctx?.arc(this.centerX, this.centerY, this.radius, 0, Math.PI * 2, false);
             this.ctx?.fill();
             this.ctx?.stroke();
         }
@@ -39,6 +44,9 @@ export class Circle extends Tool {
 
     private mouseDownHandler(event: MouseEvent) {
         this.ctx!.lineWidth = 1;
+        this.fillColor = this.color;
+        this.lineColor = this.color;
+
         this.mouseDown = true;
         this.ctx?.beginPath();
         this.startX = event.clientX - this.rect!.left;
@@ -52,19 +60,38 @@ export class Circle extends Tool {
             const currentY: number = event.clientY - this.rect!.top;
             const radiusX: number = Math.abs((currentX - this.startX) / 2);
             const radiusY: number = Math.abs((currentY - this.startY) / 2);
-            const radius: number = (radiusX < radiusY ? radiusX : radiusY) - this.ctx!.lineWidth / 2;
+            this.radius = (radiusX < radiusY ? radiusX : radiusY) - this.ctx!.lineWidth / 2;
             const posX: number = this.startX < currentX ? 1 : -1;
             const posY: number = this.startY < currentY ? 1 : -1;
-            const centerX: number = this.startX + radius * posX;
-            const centerY: number = this.startY + radius * posY;
-            this.draw(centerX, centerY, radius);
+            this.centerX = this.startX + this.radius * posX;
+            this.centerY = this.startY + this.radius * posY;
+            this.draw();
         }
     }
 
     private mouseUpHandler() {
         this.mouseDown = false;
+        this.sendFigure({
+            type: 'circle',
+            x: this.centerX,
+            y: this.centerY,
+            radius: this.radius,
+            lineWidth: this.ctx!.lineWidth,
+            color: this.color
+        })
         setTimeout(() => {
-            this.ctx!.lineWidth = this.selectedWidth;
+            this.ctx!.lineWidth = this.lineWidthValue;
         }, 0)
+    }
+
+    static draw(ctx: CanvasRenderingContext2D, { x, y, radius, lineWidth, color }: WebsocketFigure) {
+        ctx.lineWidth = lineWidth!;
+        ctx.strokeStyle = color!;
+        ctx.fillStyle = color!;
+
+        ctx.beginPath();
+        ctx.arc(x!, y!, radius!, 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.stroke();
     }
 }
