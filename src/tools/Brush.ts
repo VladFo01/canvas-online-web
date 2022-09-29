@@ -3,12 +3,9 @@ import type { WebsocketFigure } from "../types";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 export class Brush extends Tool {
-    private mouseDown: boolean;
-
     constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
         super(canvas, width, color, socket, id);
         this.ctx!.lineCap = 'round';
-        this.mouseDown = false;
         this.listen();
     }
 

@@ -9,6 +9,7 @@ export class Tool {
     protected id: string
     protected lineWidthValue: number
     protected color: string
+    protected mouseDown: boolean
     private websocketService: WebsocketService
 
     constructor(canvas: HTMLCanvasElement | null, lineWidth: number, color: string, socket: WebSocket, id: string) {
@@ -19,6 +20,7 @@ export class Tool {
         this.id = id;
         this.lineWidthValue = lineWidth;
         this.color = color;
+        this.mouseDown = false;
 
         this.ctx!.lineWidth = lineWidth;
         this.ctx!.strokeStyle = color;

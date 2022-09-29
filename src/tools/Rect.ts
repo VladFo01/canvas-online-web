@@ -3,7 +3,6 @@ import { Tool } from "./Tool";
 import type { WebsocketFigure } from "../types";
 
 export class Rect extends Tool {
-    private mouseDown: boolean;
     private startX: number;
     private startY: number;
     private width: number;
@@ -12,7 +11,6 @@ export class Rect extends Tool {
 
     constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
         super(canvas, width, color, socket, id);
-        this.mouseDown = false;
         this.listen();
         this.startX = 0;
         this.startY = 0;

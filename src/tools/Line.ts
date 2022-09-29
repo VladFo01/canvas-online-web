@@ -7,7 +7,6 @@ export class Line extends Tool {
     private startY: number;
     private endX: number
     private endY: number
-    private mouseDown: boolean;
     private saved: string;
 
     constructor(canvas: HTMLCanvasElement, width: number, color: string, socket: WebSocket, id: string) {
@@ -17,7 +16,6 @@ export class Line extends Tool {
         this.startY = 0;
         this.endX = 0;
         this.endY = 0;
-        this.mouseDown = false;
         this.saved = '';
     }
 
