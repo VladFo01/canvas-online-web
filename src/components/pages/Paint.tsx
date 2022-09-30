@@ -43,12 +43,15 @@ const Paint = () => {
   const { id } = useParams()
 
   useEffect(() => {
+    dispatch(setSessionId(id!))
+  }, []);
+
+  useEffect(() => {
     if (username) {
       const socket = new WebSocket('ws://localhost:5002/user')
       const websocketService = new WebsocketService(socket)
 
       dispatch(setSocket(socket))
-      dispatch(setSessionId(id!))
 
       websocketService.handleConnection(() => {
         websocketService.sendMessage<WebsocketMessage>({

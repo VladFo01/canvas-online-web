@@ -1,6 +1,6 @@
 export interface WebsocketMessage {
     id: string
-    method: 'connection' | 'draw',
+    method: 'connection' | 'draw'
     username?: string
     figure?: WebsocketFigure
 }
@@ -16,4 +16,13 @@ export interface WebsocketFigure {
     radius?: number
     lineWidth?: number
     color?: string | CanvasGradient | CanvasPattern
+}
+
+export interface ImageRequest {
+    image: string
+    sessionId?: string
+}
+
+export interface ImageResponse {
+    message: string
 }

@@ -11,7 +11,7 @@ interface canvasState {
 const initialState: canvasState = {
     canvas: null,
     undoList: [],
-    redoList: [],    
+    redoList: [],
 }
 
 export const canvasSlice = createSlice({
