@@ -3,13 +3,15 @@ import { useEffect, useRef, useCallback } from 'react'
 import styled from '@emotion/styled'
 import Flex from '../atoms/Flex'
 import { useDispatch, useSelector } from 'react-redux'
-import { pushToUndo, setCanvas } from '../../store/slices/canvasSlice'
+import { setCanvas } from '../../store/slices/canvasSlice'
 import { useGetImageQuery, useUploadImageMutation } from '../../store/slices/apiSlice'
 import { updateImage } from '../../utils/updateImage'
+import { WebsocketService } from '../../utils/websocketService'
+import type { WebsocketMessage } from '../../types'
 
 interface BlockProps {
   id?: string
-  onMouseDown?: (e: any) => void
+  onMouseDown?: () => void
   width?: string
   height?: string
   marginLeft?: string
@@ -31,9 +33,16 @@ const BlockStyled = styled.canvas<BlockProps>`
 const Canvas = (props: BlockProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const dispatch = useDispatch()
-  const sessionId = useSelector((state: any) => state.session.id);
+  const { id: sessionId, socket } = useSelector((state: any) => state.session)
   const [uploadImage] = useUploadImageMutation();
   const { data, refetch, isSuccess } = useGetImageQuery({ sessionId });
+  let websocketService: WebsocketService;
+
+  useEffect(() => {
+    if (socket) {
+      websocketService = new WebsocketService(socket);
+    }
+  })
 
   useEffect(() => {
     dispatch(setCanvas(canvasRef.current));
@@ -46,8 +55,12 @@ const Canvas = (props: BlockProps) => {
   }, [sessionId, isSuccess]);
 
   const onMouseDownHandler = useCallback(() => {
-    dispatch(pushToUndo(canvasRef.current?.toDataURL()));
-  }, []);
+    websocketService.sendMessage<WebsocketMessage>({
+      id: sessionId,
+      method: 'save',
+      dataUrl: canvasRef.current?.toDataURL()
+    });
+  }, [socket, sessionId]);
 
   const onMouseUpHandler = useCallback(async () => {
     await uploadImage({

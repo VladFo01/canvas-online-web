@@ -27,6 +27,9 @@ export const canvasSlice = createSlice({
         pushToRedo(state, action: PayloadAction<any>) {
             state.redoList.push(action.payload);
         },
+        clearRedo(state) {
+            state.redoList = []
+        },
         undo(state) {
             const canvas = state.canvas!;
             const ctx = canvas.getContext('2d');
@@ -40,8 +43,7 @@ export const canvasSlice = createSlice({
                     ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
                 }
             } else {
-                state.redoList.push(canvas!.toDataURL());
-                ctx?.clearRect(0, 0, canvas.width, canvas.height);
+                return state;
             }
         },
         redo(state) {
@@ -63,4 +65,4 @@ export const canvasSlice = createSlice({
     }
 });
 
-export const { setCanvas, pushToRedo, pushToUndo, undo, redo } = canvasSlice.actions;
+export const { setCanvas, pushToRedo, pushToUndo, undo, redo, clearRedo } = canvasSlice.actions;

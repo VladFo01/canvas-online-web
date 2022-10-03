@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { setSessionId, setSocket } from '../../store/slices/sessionSlice'
+import { clearRedo, pushToUndo, redo, undo } from '../../store/slices/canvasSlice'
 import { WebsocketService } from '../../utils/websocketService'
 import { buildConnectionTitle } from '../../utils/buildConnectionTitle'
 import { drawHandler } from '../../utils/drawHandler'
@@ -19,7 +20,9 @@ import circleBgImage from '../../assets/circle.svg'
 import lineBgImage from '../../assets/line.svg'
 import eraserBgImage from '../../assets/eraser.svg'
 import undoBgImage from '../../assets/undo.svg'
+import undoDisabledBgImage from '../../assets/undo-disabled.svg'
 import redoBgImage from '../../assets/redo.svg'
+import redoDisabledBgImage from '../../assets/redo-disabled.svg'
 import saveBgImage from '../../assets/save.svg'
 
 import type { WebsocketMessage } from '../../types'
@@ -31,7 +34,9 @@ const toolbarBgImages: ToolbarProps = {
   lineBgImage,
   eraserBgImage,
   undoBgImage,
+  undoDisabledBgImage,
   redoBgImage,
+  redoDisabledBgImage,
   saveBgImage,
 }
 
@@ -72,6 +77,16 @@ const Paint = () => {
             });
           case 'draw':
             return drawHandler(msg, canvas.getContext('2d')!);
+          case 'save':
+            dispatch(pushToUndo(msg.dataUrl));
+            dispatch(clearRedo());
+            return;
+          case 'undo':
+            dispatch(undo());
+            return;
+          case 'redo':
+            dispatch(redo());
+            return;
           default:
             return null;
         }

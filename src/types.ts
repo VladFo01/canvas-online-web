@@ -1,6 +1,7 @@
 export interface WebsocketMessage {
     id: string
-    method: 'connection' | 'draw'
+    method: 'connection' | 'draw' | 'save' | 'redo' | 'undo'
+    dataUrl?: string
     username?: string
     figure?: WebsocketFigure
 }

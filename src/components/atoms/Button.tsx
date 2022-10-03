@@ -6,6 +6,7 @@ interface BlockProps {
   onClick?: (event: any) => void
   backgroundImage?: string
   id?: string
+  disabled?: boolean
   marginLeft?: string
   marginRight?: string
   marginBottom?: string

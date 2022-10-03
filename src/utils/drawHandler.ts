@@ -6,7 +6,7 @@ import { Rect } from "../tools/Rect";
 import { Tool } from "../tools/Tool";
 import type { WebsocketMessage } from "../types";
 
-export const drawHandler = (msg: WebsocketMessage, ctx: CanvasRenderingContext2D) => {
+export const drawHandler = (msg: WebsocketMessage, ctx: CanvasRenderingContext2D, save?: (dataUrl: string) => void) => {
     const figure = msg.figure!;
 
     switch (figure.type) {

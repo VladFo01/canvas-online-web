@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { redo, undo } from '../../store/slices/canvasSlice'
+import { useUploadImageMutation } from '../../store/slices/apiSlice'
 import { setColor, setFillColor, setTool } from '../../store/slices/toolSlice'
 import { Brush } from '../../tools/Brush'
 import { Circle } from '../../tools/Circle'
 import { Erase } from '../../tools/Erase'
 import { Line } from '../../tools/Line'
 import { Rect } from '../../tools/Rect'
+import type { WebsocketMessage } from '../../types'
+import { WebsocketService } from '../../utils/websocketService'
 import Button from '../atoms/Button'
 import Flex from '../atoms/Flex'
 import Input from '../atoms/Input'
@@ -19,7 +21,9 @@ export interface ToolbarProps {
   eraserBgImage: string
   lineBgImage: string
   undoBgImage: string
+  undoDisabledBgImage: string
   redoBgImage: string
+  redoDisabledBgImage: string
   saveBgImage: string
 }
 
@@ -42,7 +46,11 @@ const Toolbar = (props: ToolbarProps) => {
   const dispatch = useDispatch()
   const { socket, id } = useSelector((state: any) => state.session)
   const { color, width } = useSelector((state: any) => state.tool)
-  const canvas = useSelector((state: any) => state.canvas.canvas)
+  const { canvas, undoList, redoList } = useSelector((state: any) => state.canvas)
+  const [uploadImage] = useUploadImageMutation();
+
+  const redoDisabled = !redoList.length
+  const undoDisabled = !undoList.length
 
   const [currentTool, setCurrentTool] = useState<string>('')
 
@@ -71,13 +79,27 @@ const Toolbar = (props: ToolbarProps) => {
     document.body.removeChild(a)
   }
 
-  const onReduHandler = () => {
-    dispatch(redo())
-  }
+  const onReduHandler = useCallback(async () => {
+    new WebsocketService(socket).sendMessage<WebsocketMessage>({
+      id,
+      method: 'redo'
+    })
+    await uploadImage({
+      image: redoList.at(-1),
+      sessionId: id
+    })
+  }, [socket, id, redoList]);
 
-  const onUndoHandler = () => {
-    dispatch(undo())
-  }
+  const onUndoHandler = useCallback(async () => {
+    new WebsocketService(socket).sendMessage<WebsocketMessage>({
+      id,
+      method: 'undo'
+    })
+    await uploadImage({
+      image: undoList.at(-1),
+      sessionId: id
+    })
+  }, [socket, id, undoList]);
 
   return (
     <Flex
@@ -137,13 +159,15 @@ const Toolbar = (props: ToolbarProps) => {
       <Flex>
         <Button
           onClick={onUndoHandler}
-          backgroundImage={props.undoBgImage}
+          disabled={undoDisabled}
+          backgroundImage={undoDisabled ? props.undoDisabledBgImage : props.undoBgImage}
           {...toolbarButtonSizes}
           marginRight='20px'
         />
         <Button
           onClick={onReduHandler}
-          backgroundImage={props.redoBgImage}
+          disabled={redoDisabled}
+          backgroundImage={redoDisabled ? props.redoDisabledBgImage : props.redoBgImage}
           {...toolbarButtonSizes}
           marginRight='20px'
         />
