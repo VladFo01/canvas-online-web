@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { ImageRequest, ImageResponse } from '../../types';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: `http://${import.meta.env.VITE_API_BASE}`
+    baseUrl: `https://${import.meta.env.VITE_API_BASE_URL}`
 });
 
 export const apiSlice = createApi({

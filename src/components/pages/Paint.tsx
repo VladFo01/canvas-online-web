@@ -53,7 +53,7 @@ const Paint = () => {
 
   useEffect(() => {
     if (username) {
-      const socket = new WebSocket('ws://localhost:5002/user')
+      const socket = new WebSocket(`wss://${import.meta.env.VITE_API_BASE_URL}/user`)
       const websocketService = new WebsocketService(socket)
 
       dispatch(setSocket(socket))
